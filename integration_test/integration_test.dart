@@ -1,76 +1,145 @@
+import 'package:alltests/core/constants/strings.dart';
+import 'package:alltests/features/auth/controller/auth_controller.dart';
+import 'package:alltests/widgets/auth_screen_widgets.dart';
+import 'package:alltests/features/home/views/home.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:alltests/constants/country_enum.dart';
-import 'package:alltests/main.dart';
-import 'package:alltests/repository/repository.dart';
-import 'package:alltests/widgets/switch_country_button.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:alltests/main.dart' as app;
+import 'package:get/get.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  late StartScreenRepository repository;
-  late Country countryAfterCountryChanged;
-  late Country initialCountry;
-
   setUp(() {
-    countryAfterCountryChanged = Country.mexico;
-    initialCountry = Country.brasil;
-    repository = StartScreenRepository(initialCountry);
+    Get.lazyPut(() => AuthController());
   });
 
-  testWidgets('should change country from brasil to mexico', (tester) async {
-    tester.printToConsole('Initial Country ${repository.country}');
-
+  testWidgets('check if all widget necessary is on screen', (tester) async {
     // Initialize Screen
-    await tester.pumpWidget(StartScreen(repository: repository));
+    app.main();
     await tester.pumpAndSettle();
 
-    // Check if the initial country matches
-    expect(repository.country, initialCountry);
+    // Find the EmailInput
+    final emailInput = find.byType(EmailInput);
 
-    // Find the SwitchCountryButton which has the initial country value
-    final switchCountryButtonInitialState = find.byWidgetPredicate((widget) {
-      if (widget is SwitchCountryButton) {
-        return widget.initialValue == initialCountry;
-      }
-      return false;
-    });
+    // Find the PasswordInput
+    final passwordInput = find.byType(PasswordInput);
 
-    // Check if there is only one SwitchCountryButton of this type
-    expect(switchCountryButtonInitialState, findsOneWidget);
+    // Find the LoginButton
+    final loginButton = find.byType(LoginButton);
+
+    // Check if there is only one EmailInput
+    expect(emailInput, findsOneWidget);
+
+    // Check if there is only one PasswordInput
+    expect(passwordInput, findsOneWidget);
+
+    // Check if there is only one LoginButton
+    expect(loginButton, findsOneWidget);
+  });
+
+  testWidgets('should perform login sucessfully', (tester) async {
+    // Initialize Screen
+    app.main();
+    await tester.pumpAndSettle();
+
+    // Find the EmailInput
+    final emailInput = find.byType(EmailInput);
+
+    // Find the PasswordInput
+    final passwordInput = find.byType(PasswordInput);
+
+    // Find the LoginButton
+    final loginButton = find.byType(LoginButton);
+
+    await tester.enterText(emailInput, 'liukang@wins.com');
+    await tester.enterText(passwordInput, 'KitanaKahn');
 
     // Clicks the button...
-    await tester.tap(switchCountryButtonInitialState);
+    await tester.tap(loginButton);
     await tester.pumpAndSettle();
 
-    // Find the mexico country option
-    final mexicoCountryOption = find.descendant(
-      of: find.byType(DropdownMenuItem<Country>),
-      matching: find.text(
-        countryAfterCountryChanged.tostring(),
-      ),
-    );
-
-    // Hits that option
-    await tester.tap(mexicoCountryOption);
+    // Check if HomeView is being presented
+    final homeView = find.byType(HomeView);
+    expect(homeView, findsOneWidget);
+  });
+  testWidgets('shouldn\'t perform login sucessfully with wrong password',
+      (tester) async {
+    // Initialize Screen
+    app.main();
     await tester.pumpAndSettle();
 
-    // verifies if the SwitchCountryButton has a new country value
-    final switchCountryButtonChangedState = find.byWidgetPredicate((widget) {
-      if (widget is SwitchCountryButton) {
-        final newCountry = widget.initialValue;
-        return newCountry == countryAfterCountryChanged;
-      }
-      return false;
-    });
+    // Find the EmailInput
+    final emailInput = find.byType(EmailInput);
 
-    // Do some validations after change performed.
-    // Notes that the repository has the new value assigned during the cycle.
-    expect(switchCountryButtonChangedState, findsOneWidget);
-    expect(repository.country, countryAfterCountryChanged);
-    expect(switchCountryButtonInitialState, findsNothing);
+    // Find the PasswordInput
+    final passwordInput = find.byType(PasswordInput);
 
-    tester.printToConsole('New Country Switched ${repository.country}');
+    // Find the LoginButton
+    final loginButton = find.byType(LoginButton);
+
+    await tester.enterText(emailInput, 'liukang@wins.com');
+    await tester.enterText(passwordInput, 'wrongpassword');
+
+    // Clicks the button...
+    await tester.tap(loginButton);
+    await tester.pumpAndSettle();
+
+    // Shows dialog
+    final alertDialog = find.byType(AlertDialog);
+    expect(alertDialog, findsOneWidget);
+  });
+  testWidgets('shouldn\'t perform login sucessfully with wrong email',
+      (tester) async {
+    // Initialize Screen
+    app.main();
+    await tester.pumpAndSettle();
+
+    // Find the EmailInput
+    final emailInput = find.byType(EmailInput);
+
+    // Find the PasswordInput
+    final passwordInput = find.byType(PasswordInput);
+
+    // Find the LoginButton
+    final loginButton = find.byType(LoginButton);
+
+    await tester.enterText(emailInput, 'wrong@email.com');
+    await tester.enterText(passwordInput, 'KitanaKahn');
+
+    // Clicks the button...
+    await tester.tap(loginButton);
+    await tester.pumpAndSettle();
+
+    // Shows dialog
+    final alertDialog = find.byType(AlertDialog);
+    expect(alertDialog, findsOneWidget);
+  });
+  testWidgets('shouldn\'t perform login sucessfully with empty data',
+      (tester) async {
+    // Initialize Screen
+    app.main();
+    await tester.pumpAndSettle();
+
+    // Find the EmailInput
+    final emailInput = find.byType(EmailInput);
+
+    // Find the PasswordInput
+    final passwordInput = find.byType(PasswordInput);
+
+    // Find the LoginButton
+    final loginButton = find.byType(LoginButton);
+
+    await tester.enterText(emailInput, '');
+    await tester.enterText(passwordInput, '');
+
+    // Clicks the button...
+    await tester.tap(loginButton);
+    await tester.pumpAndSettle();
+
+    // Shows dialog
+    final requiredField = find.text(Strings.requiredField);
+    expect(requiredField, findsWidgets);
   });
 }

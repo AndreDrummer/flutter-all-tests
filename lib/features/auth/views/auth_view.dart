@@ -26,7 +26,7 @@ class AuthView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Logo(),
+                const Logo(key: Key('logo')),
                 EmailInput(onChanged: _authController.updateEmail),
                 Obx(
                   () {

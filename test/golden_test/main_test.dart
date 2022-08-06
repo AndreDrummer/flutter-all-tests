@@ -1,16 +1,8 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:alltests/features/auth/views/auth_view.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 
 void main() {
-  late StartScreenRepository repository;
-  late Country initialCountry;
-
-  setUp(() {
-    initialCountry = Country.brasil;
-    repository = StartScreenRepository(initialCountry);
-  });
-
-  testGoldens('Start Screen Test', (tester) async {
+  testGoldens('Auth Screen Test', (tester) async {
     await loadAppFonts();
 
     final builder = DeviceBuilder()
@@ -18,12 +10,12 @@ void main() {
         Device.iphone11,
       ])
       ..addScenario(
-        name: 'Start Screen',
-        widget: StartScreen(repository: repository),
+        name: 'Auth Screen',
+        widget: AuthView(),
       );
 
     await tester.pumpDeviceBuilder(builder);
 
-    await screenMatchesGolden(tester, 'Start Screen');
+    await screenMatchesGolden(tester, 'Auth Screen');
   });
 }

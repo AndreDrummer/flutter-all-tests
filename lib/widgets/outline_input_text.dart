@@ -84,12 +84,11 @@ class OutlinedInputText extends StatelessWidget {
                   color: textColor ?? Colors.white,
                   fontSize: 21.0,
                 ),
-                errorBorder:
-                    InputBorder.none, // _outlineInputBorder(isError: true),
-                disabledBorder: InputBorder.none, // _outlineInputBorder(),
-                enabledBorder: InputBorder.none, // _outlineInputBorder(),
-                focusedBorder: InputBorder.none, // _outlineInputBorder(),
-                border: InputBorder.none, // _outlineInputBorder(),
+                disabledBorder: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                border: InputBorder.none,
               ),
             ),
           ),
@@ -108,9 +107,5 @@ class OutlinedInputText extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  OutlineInputBorder _outlineInputBorder({bool isError = false}) {
-    return OutlineInputBorder();
   }
 }
