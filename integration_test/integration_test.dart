@@ -1,145 +1,116 @@
-import 'package:alltests/core/constants/strings.dart';
 import 'package:alltests/features/auth/controller/auth_controller.dart';
 import 'package:alltests/widgets/auth_screen_widgets.dart';
-import 'package:alltests/features/home/views/home.dart';
-import 'package:flutter/material.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:alltests/features/home/views/home.dart';
+import 'package:alltests/core/constants/strings.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:alltests/main.dart' as app;
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  late String password = '';
+  late String email = '';
 
   setUp(() {
     Get.lazyPut(() => AuthController());
   });
 
   testWidgets('check if all widget necessary is on screen', (tester) async {
-    // Initialize Screen
     app.main();
     await tester.pumpAndSettle();
 
-    // Find the EmailInput
     final emailInput = find.byType(EmailInput);
-
-    // Find the PasswordInput
     final passwordInput = find.byType(PasswordInput);
-
-    // Find the LoginButton
     final loginButton = find.byType(LoginButton);
 
-    // Check if there is only one EmailInput
     expect(emailInput, findsOneWidget);
-
-    // Check if there is only one PasswordInput
     expect(passwordInput, findsOneWidget);
-
-    // Check if there is only one LoginButton
     expect(loginButton, findsOneWidget);
   });
 
   testWidgets('should perform login sucessfully', (tester) async {
-    // Initialize Screen
     app.main();
     await tester.pumpAndSettle();
 
-    // Find the EmailInput
+    email = 'liukang@wins.com';
+    password = 'KitanaKahn';
+
     final emailInput = find.byType(EmailInput);
-
-    // Find the PasswordInput
     final passwordInput = find.byType(PasswordInput);
-
-    // Find the LoginButton
     final loginButton = find.byType(LoginButton);
+    final homeView = find.byType(HomeView);
 
-    await tester.enterText(emailInput, 'liukang@wins.com');
-    await tester.enterText(passwordInput, 'KitanaKahn');
+    await tester.enterText(emailInput, email);
+    await tester.enterText(passwordInput, password);
 
-    // Clicks the button...
     await tester.tap(loginButton);
     await tester.pumpAndSettle();
 
-    // Check if HomeView is being presented
-    final homeView = find.byType(HomeView);
     expect(homeView, findsOneWidget);
   });
-  testWidgets('shouldn\'t perform login sucessfully with wrong password',
-      (tester) async {
-    // Initialize Screen
+  testWidgets('shouldn\'t perform login: wrong password', (tester) async {
     app.main();
     await tester.pumpAndSettle();
 
-    // Find the EmailInput
+    email = 'liukang@wins.com';
+    password = 'wrongpassword';
+
     final emailInput = find.byType(EmailInput);
-
-    // Find the PasswordInput
     final passwordInput = find.byType(PasswordInput);
-
-    // Find the LoginButton
     final loginButton = find.byType(LoginButton);
+    final alertDialog = find.byType(AlertDialog);
 
-    await tester.enterText(emailInput, 'liukang@wins.com');
-    await tester.enterText(passwordInput, 'wrongpassword');
+    await tester.enterText(emailInput, email);
+    await tester.enterText(passwordInput, password);
 
-    // Clicks the button...
     await tester.tap(loginButton);
     await tester.pumpAndSettle();
 
-    // Shows dialog
-    final alertDialog = find.byType(AlertDialog);
     expect(alertDialog, findsOneWidget);
   });
-  testWidgets('shouldn\'t perform login sucessfully with wrong email',
-      (tester) async {
-    // Initialize Screen
+  testWidgets('shouldn\'t perform login: wrong email', (tester) async {
     app.main();
     await tester.pumpAndSettle();
 
-    // Find the EmailInput
+    email = 'wrong@email.com';
+    password = 'wrongpassword';
+
     final emailInput = find.byType(EmailInput);
-
-    // Find the PasswordInput
     final passwordInput = find.byType(PasswordInput);
-
-    // Find the LoginButton
     final loginButton = find.byType(LoginButton);
+    final alertDialog = find.byType(AlertDialog);
 
-    await tester.enterText(emailInput, 'wrong@email.com');
-    await tester.enterText(passwordInput, 'KitanaKahn');
+    await tester.enterText(emailInput, email);
+    await tester.enterText(passwordInput, password);
 
-    // Clicks the button...
     await tester.tap(loginButton);
     await tester.pumpAndSettle();
 
-    // Shows dialog
-    final alertDialog = find.byType(AlertDialog);
     expect(alertDialog, findsOneWidget);
   });
-  testWidgets('shouldn\'t perform login sucessfully with empty data',
-      (tester) async {
-    // Initialize Screen
+  testWidgets('shouldn\'t perform login: empty data', (tester) async {
     app.main();
     await tester.pumpAndSettle();
 
-    // Find the EmailInput
+    email = '';
+    password = '';
+
     final emailInput = find.byType(EmailInput);
-
-    // Find the PasswordInput
     final passwordInput = find.byType(PasswordInput);
-
-    // Find the LoginButton
     final loginButton = find.byType(LoginButton);
 
-    await tester.enterText(emailInput, '');
-    await tester.enterText(passwordInput, '');
-
-    // Clicks the button...
-    await tester.tap(loginButton);
-    await tester.pumpAndSettle();
-
-    // Shows dialog
     final requiredField = find.text(Strings.requiredField);
-    expect(requiredField, findsWidgets);
+    final invalideEmail = find.text(Strings.invalideEmail);
+
+    await tester.enterText(emailInput, email);
+    await tester.enterText(passwordInput, password);
+
+    await tester.tap(loginButton);
+    await tester.pumpAndSettle();
+
+    expect(requiredField, findsOneWidget);
+    expect(invalideEmail, findsOneWidget);
   });
 }

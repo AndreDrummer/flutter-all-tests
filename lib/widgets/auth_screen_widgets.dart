@@ -14,7 +14,7 @@ class Logo extends StatelessWidget {
     return Column(
       children: [
         Container(
-          height: 120,
+          height: 104,
           margin: const EdgeInsets.symmetric(vertical: 32),
           child: Image.asset(AssetsName.logo),
         ),
